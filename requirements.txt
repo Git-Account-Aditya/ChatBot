@@ -1,0 +1,10 @@
+flask
+flask_sqlalchemy
+langchain_groq
+langchain_core
+langchain
+collections
+os
+markdown
+requests
+uuid

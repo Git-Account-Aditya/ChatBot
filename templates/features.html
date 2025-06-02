@@ -1,0 +1,159 @@
+{% extends "layouts.html" %}
+
+{% block title %}
+Chatbot | Features
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 mx-auto">
+            <!-- Header section centered -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 mb-3"><i class="bi bi-stars"></i> Chatbot Features</h1>
+                <p class="lead">Discover what makes this chatbot powerful, user-friendly, and developer-ready.</p>
+            </div>
+            <!-- Redesigned Features Grid -->
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                <div class="col d-flex">
+                    <div class="card feature-card flex-fill shadow-sm border-0 h-100">
+                        <div class="card-body text-center">
+                            <div class="mb-3"><i class="bi bi-chat-dots fs-1 text-primary"></i></div>
+                            <h5 class="card-title">Multi-Session Chat</h5>
+                            <p class="card-text">Start, switch, and delete multiple chat sessions. Each session remembers its own conversation context.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col d-flex">
+                    <div class="card feature-card flex-fill shadow-sm border-0 h-100">
+                        <div class="card-body text-center">
+                            <div class="mb-3"><i class="bi bi-memory fs-1 text-success"></i></div>
+                            <h5 class="card-title">Contextual Memory</h5>
+                            <p class="card-text">Uses advanced conversation buffer memory for context-aware, relevant responses in every session.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col d-flex">
+                    <div class="card feature-card flex-fill shadow-sm border-0 h-100">
+                        <div class="card-body text-center">
+                            <div class="mb-3"><i class="bi bi-code-slash fs-1 text-warning"></i></div>
+                            <h5 class="card-title">Code & Markdown Support</h5>
+                            <p class="card-text">Supports code blocks, syntax highlighting, and markdown formatting for technical conversations.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col d-flex">
+                    <div class="card feature-card flex-fill shadow-sm border-0 h-100">
+                        <div class="card-body text-center">
+                            <div class="mb-3"><i class="bi bi-database fs-1 text-info"></i></div>
+                            <h5 class="card-title">Persistent Storage</h5>
+                            <p class="card-text">All chats are stored in a database, so your conversations are never lost—even after a refresh.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col d-flex">
+                    <div class="card feature-card flex-fill shadow-sm border-0 h-100">
+                        <div class="card-body text-center">
+                            <div class="mb-3"><i class="bi bi-lightning-charge fs-1 text-danger"></i></div>
+                            <h5 class="card-title">Fast & Responsive UI</h5>
+                            <p class="card-text">Built with Bootstrap 5 for a modern, mobile-friendly, and responsive user experience.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col d-flex">
+                    <div class="card feature-card flex-fill shadow-sm border-0 h-100">
+                        <div class="card-body text-center">
+                            <div class="mb-3"><i class="bi bi-tools fs-1 text-secondary"></i></div>
+                            <h5 class="card-title">Open Source & Extensible</h5>
+                            <p class="card-text">Easily customizable and extendable for your own use cases. Built with modular, clean code.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <br>
+            <br>
+            <hr>
+            <br>
+            <br>
+            <!-- Technologies Used -->
+            <div class="text-center mb-4">
+                <h2 class="mb-3"><i class="bi bi-gear-wide-connected"></i> Technologies Used</h2>
+            </div>
+            <div class="row justify-content-center mb-5">
+                <div class="col-md-8">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b>Python 3</b> &mdash; Core backend language</li>
+                        <li class="list-group-item"><b>Flask</b> &mdash; Web framework</li>
+                        <li class="list-group-item"><b>LangChain</b> &mdash; Conversational AI and memory</li>
+                        <li class="list-group-item"><b>Bootstrap 5</b> &mdash; Responsive UI framework</li>
+                        <li class="list-group-item"><b>Bootstrap Icons</b> &mdash; Iconography</li>
+                        <li class="list-group-item"><b>SQLite</b> &mdash; Database for chat and session storage</li>
+                        <li class="list-group-item"><b>Markdown & Highlight.js</b> &mdash; For code and markdown rendering</li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <br>
+
+            <!-- Database Schema Diagram -->
+            <div class="text-center mb-4">
+                <h2 class="mb-3"><i class="bi bi-diagram-3"></i> Database Schema</h2>
+            </div>
+            <br>
+            <div class="d-flex justify-content-center mb-5">
+                <div style="
+                    background: var(--bs-dark, #23272b);
+                    border-radius: 1.5rem;
+                    padding: 2.5rem 2rem 2rem 2rem;
+                    box-shadow: 0 0.5rem 2rem rgba(0,0,0,0.25);
+                    border: 2px solid var(--bs-secondary, #495057);
+                    ">
+                    <svg width="800" height="260" viewBox="0 0 800 260" xmlns="http://www.w3.org/2000/svg">
+                        <!-- ChatSession Table -->
+                        <rect x="60" y="60" width="220" height="110" rx="18" fill="#23272b" stroke="#6c757d" stroke-width="2"/>
+                        <text x="170" y="90" text-anchor="middle" fill="#dee2e6" font-size="24" font-weight="bold" font-family="Segoe UI, Arial">ChatSession</text>
+                        <text x="80" y="125" fill="#ced4da" font-size="16" font-family="Segoe UI, Arial">id <tspan fill="#868e96" font-size="14">(String, PK)</tspan></text>
+                        <text x="80" y="150" fill="#ced4da" font-size="16" font-family="Segoe UI, Arial">title <tspan fill="#868e96" font-size="14">(String)</tspan></text>
+                        <!-- Message Table -->
+                        <rect x="520" y="40" width="220" height="150" rx="18" fill="#23272b" stroke="#6c757d" stroke-width="2"/>
+                        <text x="630" y="70" text-anchor="middle" fill="#dee2e6" font-size="24" font-weight="bold" font-family="Segoe UI, Arial">Message</text>
+                        <text x="540" y="105" fill="#ced4da" font-size="16" font-family="Segoe UI, Arial">id <tspan fill="#868e96" font-size="14">(Integer, PK)</tspan></text>
+                        <text x="540" y="130" fill="#ced4da" font-size="16" font-family="Segoe UI, Arial">session_id <tspan fill="#868e96" font-size="14">(String, FK)</tspan></text>
+                        <text x="540" y="155" fill="#ced4da" font-size="16" font-family="Segoe UI, Arial">sender <tspan fill="#868e96" font-size="14">(String)</tspan></text>
+                        <text x="540" y="180" fill="#ced4da" font-size="16" font-family="Segoe UI, Arial">content <tspan fill="#868e96" font-size="14">(Text)</tspan></text>
+                        <!-- Relationship Arrow (horizontal) -->
+                        <defs>
+                            <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+                                <path d="M0,0 L0,8 L8,4 z" fill="#adb5bd"/>
+                            </marker>
+                        </defs>
+                        <line x1="280" y1="115" x2="520" y2="115" stroke="#adb5bd" stroke-width="3" marker-end="url(#arrow)"/>
+                        <!-- Relationship Label above arrow -->
+                        <text x="400" y="105" fill="#adb5bd" font-size="15" text-anchor="middle" font-family="Segoe UI, Arial" font-weight="bold">1 : N</text>
+                        <text x="400" y="140" fill="#adb5bd" font-size="13" text-anchor="middle" font-family="Segoe UI, Arial">ChatSession.id → Message.session_id</text>
+                        <!-- Relationship Box -->
+                        <rect x="355" y="60" width="90" height="24" rx="8" fill="#343a40" stroke="#adb5bd" stroke-width="1"/>
+                        <text x="400" y="76" fill="#adb5bd" font-size="13" text-anchor="middle" font-family="Segoe UI, Arial">Relationship</text>
+                    </svg>
+                    <div class="text-center mt-3" style="color:#adb5bd;font-size:16px;">
+                        <span style="color:#dee2e6;font-weight:bold;">ChatSession</span>
+                        <span>has many</span>
+                        <span style="color:#dee2e6;font-weight:bold;">Message</span>
+                        <span>(1:N)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class="col text-center">
+                    <p class="text-muted">Project by Aditya Rawat &mdash; Powered by LangChain, Flask, and Bootstrap.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

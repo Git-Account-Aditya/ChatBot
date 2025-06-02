@@ -1,0 +1,233 @@
+{% extends "layouts.html" %}
+
+{% block title %}
+Chatbot | Home
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="static/css/style.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <!-- Side Panel -->
+        <aside class="col-md-4 col-lg-3 side-panel-box">
+            <nav class="card side-panel-card" aria-label="Chat sessions">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Chats</span>
+                    <button id="new-chat-btn" class="btn btn-sm btn-primary" aria-label="New chat">New</button>
+                </div>
+                <ul class="list-group list-group-flush" id="chat-sessions">
+                    {% for s in sessions %}
+                    <li class="list-group-item session-item d-flex justify-content-between align-items-center"
+                        data-session="{{ s.id }}">
+                        <span class="session-title">{{ s.title or s.id[:8] }}</span>
+                        <button class="delete-chat-btn btn btn-link p-0 ms-2" title="Delete" aria-label="Delete chat">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+        </aside>
+        <!-- Chat Area -->
+        <main class="col-md-8 col-lg-6 chat-box" style="width: 60vw; min-height: 480px;">
+            <section id="chat-area" class="container-sm text-start p-3" aria-live="polite"
+                style="height: 480px; overflow-y: auto; border-radius: 1rem;">
+                <div id="chat-prompt">What can I help with?</div>
+            </section>
+            <form class="input-group centered-input" id="input-group-wrap" autocomplete="off" aria-label="Chat input"
+                onsubmit="return false;">
+                <textarea class="form-control" id="user-input" rows="2" placeholder="Ask Anything"
+                    aria-label="Type your message"></textarea>
+            </form>
+        </main>
+    </div>
+</div>
+
+<script>
+    const userInput = document.getElementById('user-input');
+    const chatArea = document.getElementById('chat-area');
+    const sessionsList = document.getElementById('chat-sessions');
+    const newChatBtn = document.getElementById('new-chat-btn');
+    const chatPrompt = document.getElementById('chat-prompt');
+    const inputGroupWrap = document.getElementById('input-group-wrap');
+
+    function addOrUpdateSession(session) {
+        let item = sessionsList.querySelector(`[data-session="${session.id}"]`);
+        if (!item) {
+            item = document.createElement('li');
+            item.className = 'list-group-item session-item d-flex justify-content-between align-items-center';
+            item.dataset.session = session.id;
+            // Title
+            const titleSpan = document.createElement('span');
+            titleSpan.className = 'session-title';
+            item.appendChild(titleSpan);
+            // Delete button
+            const delBtn = document.createElement('button');
+            delBtn.className = 'delete-chat-btn btn btn-link p-0 ms-2';
+            delBtn.title = 'Delete';
+            delBtn.setAttribute('aria-label', 'Delete chat');
+            delBtn.innerHTML = '<i class="bi bi-trash"></i>';
+            item.appendChild(delBtn);
+            sessionsList.prepend(item);
+            // Attach delete handler
+            delBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (confirm('Delete this chat?')) {
+                    fetch(`/delete_session/${session.id}`, { method: 'POST' })
+                        .then(res => res.json())
+                        .then(data => { if (data.success) item.remove(); });
+                }
+            });
+        }
+        item.querySelector('.session-title').textContent = session.title || session.id.slice(0, 8);
+    }
+
+    document.querySelectorAll('.delete-chat-btn').forEach(function (delBtn) {
+        delBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const item = delBtn.closest('.session-item');
+            const sessionId = item ? item.dataset.session : null;
+            if (sessionId && confirm('Delete this chat?')) {
+                fetch(`/delete_session/${sessionId}`, { method: 'POST' })
+                    .then(res => res.json())
+                    .then(data => { if (data.success) item.remove(); });
+            }
+        });
+    });
+
+    function animateBotMessage(html) {
+        // Typewriter effect for bot message
+        const wrapper = document.createElement('div');
+        wrapper.className = 'bot-message-wrapper';
+        const msgDiv = document.createElement('span');
+        msgDiv.className = 'bot-message';
+        wrapper.appendChild(msgDiv);
+        chatArea.appendChild(wrapper);
+        chatArea.scrollTop = chatArea.scrollHeight;
+
+        // Strip HTML tags for animation, then restore after
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const text = tempDiv.textContent || tempDiv.innerText || '';
+        let i = 0;
+        function typeWriter() {
+            msgDiv.textContent = text.slice(0, i);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            if (i < text.length) {
+                i++;
+                setTimeout(typeWriter, text[i - 1] === '\n' ? 0 : 18);
+            } else {
+                // After animation, show full HTML (for code, links, etc)
+                msgDiv.innerHTML = html;
+                chatArea.scrollTop = chatArea.scrollHeight;
+                if (window.hljs) hljs.highlightAll();
+            }
+        }
+        typeWriter();
+    }
+
+    function addMessage(text, className, isHtml = false) {
+        const wrapper = document.createElement('div');
+        wrapper.className = className + '-wrapper';
+        const msgDiv = document.createElement('span');
+        msgDiv.className = className;
+        if (isHtml) {
+            msgDiv.innerHTML = text;
+        } else {
+            msgDiv.textContent = text;
+        }
+        wrapper.appendChild(msgDiv);
+        chatArea.appendChild(wrapper);
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    function loadHistory(sessionId) {
+        fetch(`/history/${sessionId}`)
+            .then(res => res.json())
+            .then(history => {
+                chatArea.innerHTML = '';
+                history.forEach(msg => {
+                    addMessage(msg.content, msg.sender === 'user' ? 'user-message' : 'bot-message', true);
+                });
+                if (window.hljs) hljs.highlightAll();
+                if (history.length > 0) {
+                    chatPrompt.classList.add('hide-prompt');
+                    inputGroupWrap.classList.remove('centered-input');
+                    inputGroupWrap.classList.add('bottom-input');
+                } else {
+                    chatPrompt.classList.remove('hide-prompt');
+                    inputGroupWrap.classList.remove('bottom-input');
+                    inputGroupWrap.classList.add('centered-input');
+                }
+            });
+    }
+
+    if (sessionsList) {
+        sessionsList.addEventListener('click', function (e) {
+            if (
+                e.target.classList.contains('delete-chat-btn') ||
+                e.target.closest('.delete-chat-btn')
+            ) {
+                return;
+            }
+            const item = e.target.closest('.session-item');
+            if (item) {
+                loadHistory(item.dataset.session);
+            }
+        });
+    }
+
+    if (newChatBtn) {
+        newChatBtn.addEventListener('click', function () {
+            fetch('/new_session', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => { location.reload(); });
+        });
+    }
+
+    let hasInteracted = false;
+    userInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            const message = userInput.value.trim();
+            if (message) {
+                addMessage(message, 'user-message');
+                userInput.value = '';
+                chatPrompt.classList.add('hide-prompt');
+                setTimeout(function () {
+                    inputGroupWrap.classList.remove('centered-input');
+                    inputGroupWrap.classList.add('bottom-input');
+                }, 250);
+                hasInteracted = true;
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                })
+                    .then(function (response) { return response.json(); })
+                    .then(function (data) {
+                        if (data.response) {
+                            animateBotMessage(data.response);
+                        }
+                        if (data.session) {
+                            addOrUpdateSession(data.session);
+                        }
+                    })
+                    .catch(function () {
+                        addMessage('Error: Could not reach server.', 'bot-message');
+                    });
+            }
+        }
+    });
+    userInput.addEventListener('input', function () {
+        if (!hasInteracted && userInput.value.trim() === "" && chatArea.querySelectorAll('.user-message-wrapper, .bot-message-wrapper').length === 0) {
+            chatPrompt.classList.remove('hide-prompt');
+            inputGroupWrap.classList.remove('bottom-input');
+            inputGroupWrap.classList.add('centered-input');
+        }
+    });
+</script>
+{% endblock content %}
